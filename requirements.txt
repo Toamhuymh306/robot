@@ -1,0 +1,22 @@
+# Requirements for TicTacToe Robot System
+# Install with: pip install -r requirements.txt
+
+# Computer Vision
+opencv-python>=4.5.0
+opencv-contrib-python>=4.5.0
+
+# Machine Learning
+numpy>=1.21.0
+scikit-learn>=1.0.0
+
+# Serial Communication (for Arduino)
+pyserial>=3.5
+
+# Image Processing
+Pillow>=8.0.0
+
+# Optional: For advanced visualizations
+matplotlib>=3.4.0
+
+# Optional: For development
+scipy>=1.7.0
