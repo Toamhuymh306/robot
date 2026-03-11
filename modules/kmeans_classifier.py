@@ -180,25 +180,38 @@ class KMeansClassifier:
         # For remaining clusters, use color to distinguish
         remaining = [i for i in range(n_clusters) if i != empty_cluster]
         
+        # if len(remaining) >= 2 and features.shape[1] >= 3:
+        #     # If using HSV, use Hue to distinguish
+        #     # Typical values: Green Hue ~ 60, Red Hue ~ 0 or 170
+        #     hue_values = [cluster_means[i][0] if len(cluster_means[i]) > 0 else 0 
+        #                  for i in remaining]
+            
+        #     # Sort by hue value
+        #     sorted_remaining = sorted(remaining, key=lambda x: cluster_means[x][0] 
+        #                              if len(cluster_means[x]) > 0 else 0)
+            
+        #     # Lower hue (red-ish) = Robot, Higher hue (green-ish) = Player
+        #     # Note: This is a heuristic and may need calibration
+        #     if len(sorted_remaining) >= 2:
+        #         mapping[sorted_remaining[0]] = config.ROBOT  # Lower hue
+        #         mapping[sorted_remaining[1]] = config.PLAYER  # Higher hue
+        #     elif len(sorted_remaining) == 1:
+        #         mapping[sorted_remaining[0]] = config.PLAYER
+        # elif len(remaining) == 1:
+        #     mapping[remaining[0]] = config.PLAYER
         if len(remaining) >= 2 and features.shape[1] >= 3:
-            # If using HSV, use Hue to distinguish
-            # Typical values: Green Hue ~ 60, Red Hue ~ 0 or 170
-            hue_values = [cluster_means[i][0] if len(cluster_means[i]) > 0 else 0 
-                         for i in remaining]
+            hue_0 = cluster_means[remaining[0]][0]
+            hue_1 = cluster_means[remaining[1]][0]
             
-            # Sort by hue value
-            sorted_remaining = sorted(remaining, key=lambda x: cluster_means[x][0] 
-                                     if len(cluster_means[x]) > 0 else 0)
-            
-            # Lower hue (red-ish) = Robot, Higher hue (green-ish) = Player
-            # Note: This is a heuristic and may need calibration
-            if len(sorted_remaining) >= 2:
-                mapping[sorted_remaining[0]] = config.ROBOT  # Lower hue
-                mapping[sorted_remaining[1]] = config.PLAYER  # Higher hue
-            elif len(sorted_remaining) == 1:
-                mapping[sorted_remaining[0]] = config.PLAYER
-        elif len(remaining) == 1:
-            mapping[remaining[0]] = config.PLAYER
+            for idx in remaining:
+                hue = cluster_means[idx][0]
+                if hue < 30 or hue > 150:   # Đỏ: Hue ~0 hoặc ~170
+                    mapping[idx] = config.ROBOT
+                elif 30 <= hue <= 90:        # Xanh lá: Hue ~60
+                    mapping[idx] = config.PLAYER
+                else:
+                    mapping[idx] = config.PLAYER  # Mặc định
+
         
         return mapping
     
