@@ -16,13 +16,14 @@ import config
 class RobotController:
     """Controls the robot arm for Tic-Tac-Toe game."""
     
-    def __init__(self, port: str = None, baud: int = None, simulation_mode: bool = None, *, max_retries: int = 3, retry_delay: float = 1.0, verbose: bool = False):
+    def __init__(self, port: str = None, baud: int = None, simulation_mode: bool = None, serial_obj=None, *, max_retries: int = 3, retry_delay: float = 1.0, verbose: bool = False):
         self.serial_port = None
         self.connected = False
         # allow caller to override simulation mode/port/baud
         self.simulation_mode = config.SIMULATION_MODE if simulation_mode is None else bool(simulation_mode)
         self.port = config.SERIAL_PORT if port is None else port
         self.baud = config.SERIAL_BAUDRATE if baud is None else int(baud)
+        self._external_serial = serial_obj
         self.connection_error = None
         self.max_retries = int(max_retries)
         self.retry_delay = float(retry_delay)
@@ -61,6 +62,13 @@ class RobotController:
     def _initialize(self):
         """Initialize serial connection or simulation mode."""
         if self.simulation_mode:
+            # If an external serial object was provided, use it to simulate
+            if self._external_serial is not None:
+                print("Robot Controller: SIMULATION MODE with mock serial")
+                self.serial_port = self._external_serial
+                self.connected = True
+                return
+
             print("Robot Controller: SIMULATION MODE (no real robot)")
             self.connected = True
             return
