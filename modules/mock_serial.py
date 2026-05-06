@@ -17,6 +17,10 @@ class MockSerial:
         self._response_delay = float(response_delay)
 
     @property
+    def is_open(self) -> bool:
+        return self._open
+
+    @property
     def in_waiting(self):
         with self._lock:
             return len(self._out) > 0
